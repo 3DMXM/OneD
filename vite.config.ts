@@ -42,3 +42,5 @@ export default defineConfig({
     port: pkg.env.VITE_DEV_SERVER_PORT,
   },
 })
+
+
