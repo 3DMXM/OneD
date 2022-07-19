@@ -33,7 +33,7 @@ async function createWindow() {
     win = new BrowserWindow({
         title: '小莫网盘下载器',
         icon: join(ROOT_PATH.public, 'favicon.ico'),
-        width: 900,
+        width: 800,
         height: 500,
         webPreferences: {
             preload,

@@ -11,17 +11,17 @@ const router = createRouter({
         {
             path:"/game",
             name:"Game",
-            component:()=>""
+            component:()=>import("../views/GameView.vue")
         },
         {
             path:"/download",
             name:"Gownload",
-            component:()=>""
+            component:()=>import("../views/DownloadView.vue")
         },
         {
             path:"/setting",
             name:"Setting",
-            component:()=>""
+            component:()=>import("../views/SettingView.vue")
         }
     ]
 })

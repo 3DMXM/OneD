@@ -6,6 +6,7 @@
                 v-for="(item, index) in list"
                 :key="index"
                  :to="item.path"
+                 active-class="active"
                 >
                     <i class="mdui-list-item-icon mdui-icon material-icons">{{item.icon}}</i>
                     <div class="mdui-list-item-content">{{item.name}}</div>
@@ -14,7 +15,7 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
     name: 'Drawer',
     data() {
@@ -58,5 +59,9 @@ export default {
     height: 100%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     z-index: 100;
+
+    .active {
+       background-color: rgba(255, 255, 255, 0.08);
+    }
 }
 </style>
