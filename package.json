@@ -14,15 +14,14 @@
     "node": ">=14.17.0"
   },
   "devDependencies": {
+    "@electron/remote": "^2.0.8",
     "@vitejs/plugin-vue": "^2.3.3",
     "electron": "^19.0.8",
     "electron-builder": "^23.1.0",
     "typescript": "^4.7.4",
     "vite": "^2.9.13",
-    "vite-plugin-electron": "^0.7.5",
-    "vue-tsc": "^0.38.3",
-    "@electron/remote": "^2.0.8"
-
+    "vite-plugin-electron": "^0.8.0",
+    "vue-tsc": "^0.38.3"
   },
   "env": {
     "VITE_DEV_SERVER_HOST": "127.0.0.1",

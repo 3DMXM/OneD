@@ -1,7 +1,7 @@
 <template>
     <div class="Download">
         <div class="toolbar">
-            <div class="toolbar-btn"><i class="mdui-icon material-icons">add</i> 新建任务</div>
+            <div class="toolbar-btn" @click="test"><i class="mdui-icon material-icons">add</i> 新建任务</div>
         </div>
         <DlownloadList />
     </div>
@@ -9,6 +9,7 @@
 
 <script lang="ts">
 import DlownloadList from '../components/DownloadList.vue'
+
 
 export default {
     name: 'DownloadView',
@@ -20,6 +21,11 @@ export default {
             
         }
     },
+    methods: {
+        test() {
+            // ipcRenderer.send('test')
+        }
+    }
 }
 </script>
 

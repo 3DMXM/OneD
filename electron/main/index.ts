@@ -30,6 +30,7 @@ const url = `http://${process.env['VITE_DEV_SERVER_HOST']}:${process.env['VITE_D
 const indexHtml = join(ROOT_PATH.dist, 'index.html')
 
 async function createWindow() {
+    // 关闭默认标题栏
     Menu.setApplicationMenu(null)
 
     win = new BrowserWindow({
@@ -37,7 +38,8 @@ async function createWindow() {
         icon: join(ROOT_PATH.public, 'favicon.ico'),
         width: 800,
         height: 500,
-        minWidth: 500,
+        minWidth: 530,
+        minHeight: 460,
         webPreferences: {
             preload,
             nodeIntegration: true,
@@ -109,20 +111,26 @@ ipcMain.handle('open-win', (event, arg) => {
     }
 })
 
+
 // 窗口最小化
 ipcMain.on('window-min', function () {
-    win.minimize();
+    if (win) {
+        win.minimize();
+    }
 })
 //窗口最大化
 ipcMain.on('window-max', function () {
-    if (win.isMaximized()) {
-        win.restore();
-    } else {
-        win.maximize();
+    if (win) {
+        if (win.isMaximized()) {
+            win.restore();
+        } else {
+            win.maximize();
+        }
     }
 })
-
 //关闭窗口
 ipcMain.on('window-close', function () {
-    win.close();
+    if (win) {
+        win.close();
+    }
 })
