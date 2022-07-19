@@ -1,8 +1,8 @@
 <template>
     <div class="title-bar">
-        <div class="title-bar-dragger"></div>
+        <div class="title-bar-dragger">OneDrive下载器</div>
         <div class="window-actions">
-            <li @click="close">
+            <li @click="handleMinimize">
                 <svg
                 version="1.1"
                 role="presentation"
@@ -29,7 +29,7 @@
                 </g>
                 </svg>
             </li>
-            <li>
+            <li @click="handleMaximize">
                 <svg
                 version="1.1"
                 role="presentation"
@@ -59,7 +59,7 @@
                 </g>
                 </svg>
             </li>
-            <li class="win-close-btn">
+            <li @click="handleClose">
                 <svg
                 version="1.1"
                 role="presentation"
@@ -100,12 +100,20 @@
 </template>
 
 <script lang="ts">
+import {ipcRenderer} from 'electron'
+
 export default {
-    name: "TitleBar",
+    name: "TitleBar",    
     methods: {
-        close() {
-            console.log("close");
-            
+        handleMinimize () {
+           ipcRenderer.send('window-min')
+
+        },
+        handleMaximize () {
+            ipcRenderer.send('window-max')
+        },
+        handleClose () {
+            ipcRenderer.send('window-close')
         }
     }
 };
@@ -117,16 +125,19 @@ export default {
     top: 0;
     left: 0;
     display: flex;
+    align-items: center;
     flex-direction: row;
     width: 100%;
     height: 36px;
     z-index: 5000;
+    background: rgba(0, 0, 0, .2);
     .title-bar-dragger{
         margin: 5px 0 0 5px;
         flex: 1;    
         user-select: none;
         -webkit-app-region: drag;
         -webkit-user-select: none;
+        padding-left: 15px;
     }
     .window-actions{
         opacity: 0.4;

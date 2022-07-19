@@ -18,6 +18,7 @@ import TitleBar from './components/TitleBar.vue'
 .view{
     width: calc(100% - 200px);
     margin-left: 200px;
+    margin-top: 36px;
 }
 /* 滚动条美化 */
 .scrollbar-hover::-webkit-scrollbar,.scrollbar-hover::-webkit-scrollbar-button,.scrollbar-hover::-webkit-scrollbar-thumb,.scrollbar-hover::-webkit-scrollbar-track {

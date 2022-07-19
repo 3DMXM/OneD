@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, Menu } from 'electron'
 import { release } from 'os'
 import { join } from 'path'
 
@@ -30,23 +30,26 @@ const url = `http://${process.env['VITE_DEV_SERVER_HOST']}:${process.env['VITE_D
 const indexHtml = join(ROOT_PATH.dist, 'index.html')
 
 async function createWindow() {
+    Menu.setApplicationMenu(null)
+
     win = new BrowserWindow({
         title: '小莫网盘下载器',
         icon: join(ROOT_PATH.public, 'favicon.ico'),
         width: 800,
         height: 500,
+        minWidth: 500,
         webPreferences: {
             preload,
             nodeIntegration: true,
             contextIsolation: false,
         },
+        frame: false
     })
 
     if (app.isPackaged) {
         win.loadFile(indexHtml)
     } else {
         win.loadURL(url)
-        // win.webContents.openDevTools()
     }
 
     // Test actively push message to the Electron-Renderer
@@ -104,4 +107,22 @@ ipcMain.handle('open-win', (event, arg) => {
         childWindow.loadURL(`${url}/#${arg}`)
         // childWindow.webContents.openDevTools({ mode: "undocked", activate: true })
     }
+})
+
+// 窗口最小化
+ipcMain.on('window-min', function () {
+    win.minimize();
+})
+//窗口最大化
+ipcMain.on('window-max', function () {
+    if (win.isMaximized()) {
+        win.restore();
+    } else {
+        win.maximize();
+    }
+})
+
+//关闭窗口
+ipcMain.on('window-close', function () {
+    win.close();
 })
