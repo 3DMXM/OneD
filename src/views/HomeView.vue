@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <div class="logo">
-            <img src="../assets/logo.png" alt="小莫" @click="OpenHome">
+            <img src="@/assets/logo.png" alt="小莫" @click="OpenHome">
             <h1>OneDrive下载器 <span class="release-tag">v1.0.0</span></h1>
             <p>适用于小莫的网盘/游戏库的一款简易下载器</p>
         </div>

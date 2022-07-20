@@ -1,4 +1,5 @@
 import { rmSync } from 'fs'
+import { fileURLToPath, URL } from 'url'
 import { join } from 'path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -14,7 +15,7 @@ export default defineConfig({
         vue(),
         electron({
             main: {
-                entry: 'electron/main/index.ts',
+                entry: 'electron/main/index.js',
                 vite: {
                     build: {
                         outDir: 'dist/electron/main',
@@ -24,7 +25,7 @@ export default defineConfig({
             preload: {
                 input: {
                     // 您可以在此处配置多个预加载
-                    index: join(__dirname, 'electron/preload/index.ts'),
+                    index: join(__dirname, 'electron/preload/index.js'),
                 },
                 vite: {
                     build: {
@@ -42,6 +43,11 @@ export default defineConfig({
         host: pkg.env.VITE_DEV_SERVER_HOST,
         port: pkg.env.VITE_DEV_SERVER_PORT,
     },
+    resolve:{
+        alias: {
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
+        },  
+    }
 })
 
 

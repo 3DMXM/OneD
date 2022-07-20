@@ -2,7 +2,7 @@
     <div class="title-bar">
         <div class="title-bar-dragger">OneDrive下载器</div>
         <div class="window-actions">
-            <li @click="handleMinimize">
+            <li @click="handleMinimize" title="最小化窗口">
                 <svg
                 version="1.1"
                 role="presentation"
@@ -29,7 +29,7 @@
                 </g>
                 </svg>
             </li>
-            <li @click="handleMaximize">
+            <li @click="handleMaximize" title="放大/还原窗口">
                 <svg
                 version="1.1"
                 role="presentation"
@@ -59,7 +59,7 @@
                 </g>
                 </svg>
             </li>
-            <li @click="handleClose">
+            <li @click="handleClose" title="关闭">
                 <svg
                 version="1.1"
                 role="presentation"

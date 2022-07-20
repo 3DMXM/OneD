@@ -29,7 +29,7 @@
                 </div>
                 <div class="row task-progress-info">
                     <div class="task-file-size"> 100GB / {{ item.size }} </div>
-                    <div class="task-dl-speed">{{ cpeSpeed( item.speed)}}</div>
+                    <div class="task-speed-text">{{ cpeSpeed( item.speed)}}</div>
                 </div>
             </div>
         </div>
@@ -139,9 +139,13 @@ export default {
             }
 
             .task-progress-info{
-                .task-file-size{
-                    color: #9B9B9B;                
-
+                .task-speed-text{
+                    color: #9B9B9B;  
+                    font-size: 12px;              
+                    height: 0.875rem;
+                    line-height: 0.875rem;
+                    display: inline-block;
+                    vertical-align: middle;
                 }
             }
             

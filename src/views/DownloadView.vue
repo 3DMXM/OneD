@@ -8,7 +8,9 @@
 </template>
 
 <script lang="ts">
-import DlownloadList from '../components/DownloadList.vue'
+import DlownloadList from '@/components/DownloadList.vue'
+
+import {ipcRenderer} from 'electron'
 
 
 export default {
@@ -23,7 +25,7 @@ export default {
     },
     methods: {
         test() {
-            // ipcRenderer.send('test')
+            ipcRenderer.send('test')
         }
     }
 }
