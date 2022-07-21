@@ -1,22 +1,4 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-// import {join} from 'path'
-
-// const ROOT_PATH = {
-//     // /dist
-//     dist: join(__dirname, '../..'),
-//     // /dist or /public
-//     public: join(__dirname, import.meta.env.MODE == "production"  ? '../..' : '../../../public'),
-// }
-
-
-// let History = "";
-// if (import.meta.env.MODE == "production"){
-//     History = new URL('../..',import.meta.url).origin
-// }
-
-// console.log(import.meta.url);
-
-
 
 const router = createRouter({
     history: createWebHashHistory(),    // createWebHistory

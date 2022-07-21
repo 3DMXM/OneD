@@ -15,7 +15,7 @@ export default defineConfig({
         vue(),
         electron({
             main: {
-                entry: 'electron/main/index.js',
+                entry: 'electron/main/index.ts',
                 vite: {
                     build: {
                         outDir: 'dist/electron/main',
