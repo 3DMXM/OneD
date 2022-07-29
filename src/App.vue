@@ -3,6 +3,7 @@
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import Drawer from './components/Drawer.vue'
 import TitleBar from './components/TitleBar.vue'
+
 </script>
 
 <template>
@@ -12,6 +13,21 @@ import TitleBar from './components/TitleBar.vue'
         <router-view></router-view>
     </div>
 </template>
+
+<script lang="ts">
+import {mapGetters,mapState, mapActions} from 'vuex'
+
+export default{
+    name:"App",
+    methods:{
+        ...mapActions(['init']),
+    },
+    mounted(){
+        this.init();
+    },
+}
+</script>
+
 
 <style>
 @import url(mdui);

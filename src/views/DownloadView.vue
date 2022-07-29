@@ -17,9 +17,9 @@
 
 <script lang="ts">
 import DlownloadList from '@/components/DownloadList.vue'
-
 import {ipcRenderer} from 'electron'
 
+import {mapGetters,mapState, mapActions} from 'vuex'
 
 export default {
     name: 'DownloadView',
@@ -27,16 +27,18 @@ export default {
         DlownloadList
     },
     computed:{
-        socket(){
-            return new WebSocket('ws://localhost:6800/jsonrpc')
-        },
+        ...mapGetters(['socket','task_list']),
+        ...mapState(['task_list']),
     },
     data() {
-        let d : any = {
+        // let d : Object = {
+        //     tasks: [],
+        //     timer: []
+        // }
+        return {
             tasks: [],
             timer: []
         }
-        return d
     },
     methods:{
         uuid(){
@@ -67,38 +69,11 @@ export default {
                 ]
             }
             this.socket.send(JSON.stringify(options))
-            
-        }
+        },
+        ...mapActions(['get_task_list'])
     },
     mounted(){
-        // 用websocket监听 ws://localhost:6800/jsonrpc 
-        const socket = this.socket
-        socket.onopen = () => {
-            socket.send(JSON.stringify({
-                jsonrpc: "2.0",
-                id: 1,
-                method: "aria2.tellActive",
-                params: []
-            }))
-        }        
-        socket.addEventListener('message',(event: any)=>{
-            let data = JSON.parse(event.data)
-            console.log(data);
-            
-            // console.log(data)
-            if (data.method == "aria2.onDownloadStart"){                
-                this.tasks.push(data.params[0]['gid'])
-            }
-            if (data.method == "aria2.onDownloadComplete"){
-                let gid = data.params[0]['gid']               
-                clearInterval(this.timer[gid])
-            }
-        })
-        // 监听下载进度
-        // aria2.tellStatus(secret, [gid])
-        // let gid = "gid"
-        // let secret = "secret"
-        // let params = [secret, gid]
+        this.get_task_list()
     } 
 }
 </script>
