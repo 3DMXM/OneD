@@ -1,3 +1,42 @@
+<script setup lang="ts">
+import DlownloadList from '@/components/DownloadList.vue'
+import {useStore } from 'vuex'
+import { ref, computed } from 'vue'
+
+const Store = useStore();
+
+let aria2 = Store.state.aria2;
+
+// vuex 中 actions 的 get_task_list
+let get_task_list = Store.dispatch('get_task_list');
+
+let timer = null;
+
+let task_list = computed(()=>{
+    return Store.state.task_list;
+})
+
+function uuid(){
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = (c === 'x') ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+} 
+function addUri(){
+    // 新建下载
+    // aria2.addUri([secret, ]uris[, options[, position]])
+    
+    let urls = ['https://dmod.3dmgame.com/mod/Download/186563']
+    let name = '原版风格.zip';
+    let savePath = 'C:\\Users\\xiaom\\Downloads\\test'
+    
+    let id = aria2.addUri(urls, name, savePath)
+    console.log(id);
+}
+
+
+</script>
+
 <template>
     <div class="Download">
         <div class="toolbar">
@@ -5,77 +44,63 @@
         </div>
         <div class="task-list">
             <DlownloadList 
-                v-for="gid in tasks"
-                :key="gid"
-                :gid='gid' 
-                :socket="socket"
-                :timer="timer"
+                v-for="item in task_list"
+                :key="item.gid"
+                :task='item' 
                 />
         </div>        
     </div>
 </template>
 
 <script lang="ts">
-import DlownloadList from '@/components/DownloadList.vue'
-import {ipcRenderer} from 'electron'
+// import DlownloadList from '@/components/DownloadList.vue'
+// import {ipcRenderer} from 'electron'
 
-import {mapGetters,mapState, mapActions} from 'vuex'
+// import {mapGetters,mapState, mapActions} from 'vuex'
 
-export default {
-    name: 'DownloadView',
-    components: {
-        DlownloadList
-    },
-    computed:{
-        ...mapGetters(['socket','task_list']),
-        ...mapState(['task_list']),
-    },
-    data() {
-        // let d : Object = {
-        //     tasks: [],
-        //     timer: []
-        // }
-        return {
-            tasks: [],
-            timer: []
-        }
-    },
-    methods:{
-        uuid(){
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                var r = Math.random() * 16 | 0, v = (c === 'x') ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-        },
-        addUri(){
-            // 新建下载
-            // aria2.addUri([secret, ]uris[, options[, position]])
-            let id = this.uuid();
-            console.log(id);
+// export default {
+//     name: 'DownloadView',
+//     components: {
+//         DlownloadList
+//     },
+//     computed:{
+//         ...mapState(['aria2','task_list']),       
+//     },
+//     data() {
+//         // let d : Object = {
+//         //     tasks: [],
+//         //     timer: []
+//         // }
+//         return {
+//             // tasks: [],
+//             timer: []
+//         }
+//     },
+//     methods:{
+//         uuid(){
+//             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+//                 var r = Math.random() * 16 | 0, v = (c === 'x') ? r : (r & 0x3 | 0x8);
+//                 return v.toString(16);
+//             });
+//         },
+//         addUri(){
+//             // 新建下载
+//             // aria2.addUri([secret, ]uris[, options[, position]])
             
-            let urls = 'https://dmod.3dmgame.com/mod/Download/186563'
-            let name = '原版风格.zip';
-            let savePath = 'C:\\Users\\xiaom\\Downloads\\test'
-            let options = {
-                'jsonrpc':'2.0',
-                'id':id,
-                'method':'aria2.addUri',
-                'params':[
-                    [urls],
-                    {
-                        'out':name,
-                        'dir':savePath,
-                    }
-                ]
-            }
-            this.socket.send(JSON.stringify(options))
-        },
-        ...mapActions(['get_task_list'])
-    },
-    mounted(){
-        this.get_task_list()
-    } 
-}
+//             let urls = ['https://dmod.3dmgame.com/mod/Download/186563']
+//             let name = '原版风格.zip';
+//             let savePath = 'C:\\Users\\xiaom\\Downloads\\test'
+            
+//             let id = this.aria2.addUri(urls, name, savePath)
+//             console.log(id);
+            
+//         },
+//         ...mapActions(['get_task_list'])
+//     },
+//     mounted(){
+//         this.get_task_list()
+//     } 
+// }
 </script>
 
 <style lang="less" scoped>

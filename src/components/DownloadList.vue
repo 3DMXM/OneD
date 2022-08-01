@@ -1,4 +1,49 @@
+<script setup lang="ts">
+import {useStore } from 'vuex'
+import { ref, reactive, computed } from 'vue'
 
+let props :any = defineProps<{ task: object }>()
+
+let files: Array<{[name: string]: any}> = [];
+// 读取 props 中的 task
+if (props.task){
+    files = props.task.files
+}
+
+// 通过 files[0].path 获取文件名称
+let file_name = computed(()=>{
+    if (files.length > 0){
+        return files[0].path.split('\/').pop()
+    }
+    return ''
+})
+
+
+let data = reactive({
+    name: null,
+    fileName: file_name,
+    status: 'downloading',
+
+})
+
+
+// 计算文件大小
+function cpeFileSize(size: number) {
+    let sizeStr = "0kb";
+    if (size > 1024 * 1024 * 1024) {
+        sizeStr = (size / 1024 / 1024 / 1024).toFixed(2) + "GB";
+    } else if (size > 1024 * 1024) {
+        sizeStr = (size / 1024 / 1024).toFixed(2) + "MB";
+    } else if (size > 1024) {
+        sizeStr = (size / 1024).toFixed(2) + "KB";
+    } else {
+        sizeStr = size + "B";
+    }
+    return sizeStr;
+}
+
+
+</script>
 <template>
     <div class="task-item" v-if='data.name'>
         <div class="row">
@@ -23,147 +68,152 @@
             </div>
         </div>
         <div class="row task-progress-info">
-            <div class="task-file-size"> {{this.cpeFileSize(data.completedLength)}} / {{ this.cpeFileSize(data.size) }} </div>
+            <div class="task-file-size"> {{cpeFileSize(data.completedLength)}} / {{ cpeFileSize(data.size) }} </div>
             <div class="task-speed-text">{{ downloadSpeed }}</div>
         </div>
     </div>
 </template>
 
-<script>
+<script lang="ts">
+// import {mapGetters,mapState, mapActions} from 'vuex'
 
-export default {
-    name:"DlownloadList",
-    props:['gid', 'socket', 'timer'],
-    data() {
-        return {
-            data: {},
-        }
-    },
-    computed:{
-        tellStatus(){
-            return "tellStatus" + this.randomId()
-        },
-        progress_style(){
-            return {
-                width: (this.data.completedLength / this.data.size) * 100 + '%'
-            }
-        },
-        downloadSpeed(){
-            let Speed = this.cpeSpeed(this.data.downloadSpeed);
+// export default {
+//     name:"DlownloadList",
+//     props:['task'],
+//     data() {
+//         let data: {[name: string]: any} = {
+//             data: {},
+//             timer:null,
+//             gid: 0,
+//         }
+//         return data;
+//     },
+//     computed:{
+//          ...mapState(['aria2']),
+//         tellStatus(){
+//             return "tellStatus" + this.randomId()
+//         },
+//         progress_style(){
+//             return {
+//                 width: (this.data.completedLength / this.data.size) * 100 + '%'
+//             }
+//         },
+//         downloadSpeed(){
+//             let Speed = this.cpeSpeed(this.data.downloadSpeed);
 
-            if (this.data.downloadSpeed == 0) {
-                if  (this.data.status == "downloading"){
-                    Speed = "连接中..."
-                }else if (this.data.status == "pausing"){
-                    Speed = "暂停中..."
-                }else if (this.data.status == "completed"){
-                    Speed = "下载完成"
-                }else{
-                    Speed = "未知"
-                }
-            }
+//             if (this.data.downloadSpeed == 0) {
+//                 if  (this.data.status == "downloading"){
+//                     Speed = "连接中..."
+//                 }else if (this.data.status == "pausing"){
+//                     Speed = "暂停中..."
+//                 }else if (this.data.status == "completed"){
+//                     Speed = "下载完成"
+//                 }else{
+//                     Speed = "未知"
+//                 }
+//             }
 
-            return Speed
-        }
-    },
-    methods: {
-        // 暂停
-        toPause(data) {
-            data.status = "pausing";
-            this.stopSpeed()
-        },
-        // 继续
-        toContinue(data) {
-            data.status = "downloading";
-            this.startSpeed();
-        },
-        // 重新下载
-        toRestart(data) {
-            data.status = "downloading";
-            this.startSpeed();
-        },
-        // 计算下载速度 单位：字节/秒
-        cpeSpeed(speed) {
-            let speedStr = "0kb/s";
-            if (speed > 1024 * 1024) {
-                speedStr = (speed / 1024 / 1024).toFixed(2) + "MB/s";
-            } else if (speed > 1024) {
-                speedStr = (speed / 1024).toFixed(2) + "KB/s";
-            } else {
-                speedStr = speed + "B/s";
-            }
-            return speedStr;
-        },
-        // 计算文件大小
-        cpeFileSize(size) {
-            let sizeStr = "0kb";
-            if (size > 1024 * 1024 * 1024) {
-                sizeStr = (size / 1024 / 1024 / 1024).toFixed(2) + "GB";
-            } else if (size > 1024 * 1024) {
-                sizeStr = (size / 1024 / 1024).toFixed(2) + "MB";
-            } else if (size > 1024) {
-                sizeStr = (size / 1024).toFixed(2) + "KB";
-            } else {
-                sizeStr = size + "B";
-            }
-            return sizeStr;
-        },
-        // 生成随机id
-        randomId() {
-            return Math.random().toString(36).substr(2, 9);
-        },
+//             return Speed
+//         }
+//     },
+//     methods: {
+//         // 暂停
+//         toPause() {
+//             this.data.status = "pausing";
+//             this.stopSpeed()
+//         },
+//         // 继续
+//         toContinue(data) {
+//             data.status = "downloading";
+//             this.startSpeed();
+//         },
+//         // 重新下载
+//         toRestart(data) {
+//             data.status = "downloading";
+//             this.startSpeed();
+//         },
+//         // 计算下载速度 单位：字节/秒
+//         cpeSpeed(speed) {
+//             let speedStr = "0kb/s";
+//             if (speed > 1024 * 1024) {
+//                 speedStr = (speed / 1024 / 1024).toFixed(2) + "MB/s";
+//             } else if (speed > 1024) {
+//                 speedStr = (speed / 1024).toFixed(2) + "KB/s";
+//             } else {
+//                 speedStr = speed + "B/s";
+//             }
+//             return speedStr;
+//         },
+//         // 计算文件大小
+//         cpeFileSize(size) {
+//             let sizeStr = "0kb";
+//             if (size > 1024 * 1024 * 1024) {
+//                 sizeStr = (size / 1024 / 1024 / 1024).toFixed(2) + "GB";
+//             } else if (size > 1024 * 1024) {
+//                 sizeStr = (size / 1024 / 1024).toFixed(2) + "MB";
+//             } else if (size > 1024) {
+//                 sizeStr = (size / 1024).toFixed(2) + "KB";
+//             } else {
+//                 sizeStr = size + "B";
+//             }
+//             return sizeStr;
+//         },
+//         // 生成随机id
+//         randomId() {
+//             return Math.random().toString(36).substr(2, 9);
+//         },
 
-        // 开始获取下载速度
-        startSpeed() {
-            if (!this.timer[this.gid]){
-                this.timer[this.gid] = setInterval(() => {
-                    this.socket.send(JSON.stringify({
-                        "jsonrpc": "2.0",
-                        "id": this.tellStatus,
-                        "method": "aria2.tellStatus",
-                        'params': [this.gid]
-                    }))
-                }, 1000);
-            }
-        },
-        // 停止获取下载速度
-        stopSpeed() {
-            clearInterval(this.timer[this.gid]);
-            this.timer[this.gid] = null;
-        },
-        // 初始化
-        init(result) {
-            if (!this.data.name){
-                this.data.name = '原版风格.zip';
-                this.data.size = result.totalLength
-                this.data.status = 'downloading';
-                this.data.dir = result.dir;
-            }
-            this.data.downloadSpeed = result.downloadSpeed;
-            this.data.completedLength = result.completedLength;
-        }
-    },
-    mounted(){
-        this.startSpeed();
+//         // 开始获取下载速度
+//         startSpeed() {
+//             if (!this.timer[this.gid]){
+//                 this.timer[this.gid] = setInterval(() => {
+//                     this.socket.send(JSON.stringify({
+//                         "jsonrpc": "2.0",
+//                         "id": this.tellStatus,
+//                         "method": "aria2.tellStatus",
+//                         'params': [this.gid]
+//                     }))
+//                 }, 1000);
+//             }
+//         },
+//         // 停止获取下载速度
+//         stopSpeed() {
+//             clearInterval(this.timer[this.gid]);
+//             this.timer[this.gid] = null;
+//         },
+//         // 初始化
+//         init(result) {
+//             if (!this.data.name){
+//                 this.data.name = '原版风格.zip';
+//                 this.data.size = result.totalLength
+//                 this.data.status = 'downloading';
+//                 this.data.dir = result.dir;
+//             }
+//             this.data.downloadSpeed = result.downloadSpeed;
+//             this.data.completedLength = result.completedLength;
+//         }
+//     },
+//     mounted(){
+//         // this.startSpeed();
 
-        this.socket.addEventListener('message', (event) => {
-            let data = JSON.parse(event.data)
-            if (data.id == this.tellStatus) {
-                this.init(data.result);
-            }
-            // aria2.onDownloadComplete 
-            if (data.method == "aria2.onDownloadComplete") {
-                this.data.status = 'completed';
-                this.stopSpeed();
-                this.data.downloadSpeed = 0;
-                this.data.completedLength = this.data.size
-            }
-        });
-    },
-    destroyed(){
-        this.stopSpeed();
-    }
-}
+//         // this.socket.addEventListener('message', (event) => {
+//         //     let data = JSON.parse(event.data)
+//         //     if (data.id == this.tellStatus) {
+//         //         this.init(data.result);
+//         //     }
+//         //     // aria2.onDownloadComplete 
+//         //     if (data.method == "aria2.onDownloadComplete") {
+//         //         this.data.status = 'completed';
+//         //         this.stopSpeed();
+//         //         this.data.downloadSpeed = 0;
+//         //         this.data.completedLength = this.data.size
+//         //     }
+//         // });
+//     },
+//     destroyed(){
+//         this.stopSpeed();
+//     }
+// }
 </script>
 
 <style lang="less" scoped>
