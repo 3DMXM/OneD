@@ -1,3 +1,19 @@
+<script lang="ts" setup>
+import {ipcRenderer} from 'electron'
+
+function handleMinimize () {
+    ipcRenderer.send('window-min')
+
+}
+function handleMaximize () {
+    ipcRenderer.send('window-max')
+}
+function handleClose () {
+    ipcRenderer.send('window-close')
+}
+</script>
+
+
 <template>
     <div class="title-bar">
         <div class="title-bar-dragger">OneDrive下载器</div>
@@ -98,26 +114,6 @@
         </div>
     </div>
 </template>
-
-<script lang="ts">
-import {ipcRenderer} from 'electron'
-
-export default {
-    name: "TitleBar",    
-    methods: {
-        handleMinimize () {
-           ipcRenderer.send('window-min')
-
-        },
-        handleMaximize () {
-            ipcRenderer.send('window-max')
-        },
-        handleClose () {
-            ipcRenderer.send('window-close')
-        }
-    }
-};
-</script>
 
 <style lang="less" scoped>
 .title-bar{

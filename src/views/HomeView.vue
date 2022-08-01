@@ -1,3 +1,13 @@
+<script lang="ts" setup>
+ 
+ import {shell} from 'electron';
+
+function OpenHome() {
+    shell.openExternal("https://www.aoe.top");
+}
+
+</script>
+
 <template>
     <div class="home">
         <div class="logo">
@@ -14,22 +24,6 @@
     </div>
 </template>
 
-<script lang="ts">
-export default {
-    name: 'HomeView',
-    data() {
-        return {
-            
-        }
-    },
-    methods: {
-       OpenHome() {
-            const { shell } = require('electron');
-            shell.openExternal("https://www.aoe.top");
-       }
-    }
-}
-</script>
 
 <style lang="less" scoped>
 .home{

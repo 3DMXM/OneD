@@ -1,3 +1,29 @@
+<script lang="ts" setup>
+let list = [
+        {
+            'name':"首页",
+            'icon':"home",
+            'path':"/"
+        },
+        {
+            'name':"游戏库",
+            'icon':"videogame_asset",
+            'path':"/game"
+        },
+        {
+            'name':"下载管理",
+            'icon':"get_app",
+            'path':"/download"
+        },
+        {
+            'name':"设置",
+            'icon':"settings",
+            'path':"/setting"
+        }
+    ]
+</script>
+
+
 <template>
     <div class="drawer">
         <ul class="mdui-list">
@@ -15,40 +41,7 @@
     </div>
 </template>
 
-<script lang="ts">
-export default {
-    name: 'Drawer',
-    data() {
-        return {
-            list:[
-                {
-                    'name':"首页",
-                    'icon':"home",
-                    'path':"/"
-                },
-                {
-                    'name':"游戏库",
-                    'icon':"videogame_asset",
-                    'path':"/game"
-                },
-                {
-                    'name':"下载管理",
-                    'icon':"get_app",
-                    'path':"/download"
-                },
-                {
-                    'name':"设置",
-                    'icon':"settings",
-                    'path':"/setting"
-                }
-            ]
-        }
-    },
-    methods: {
-       
-    }
-};
-</script>
+
 
 <style lang="less" scoped>
 .drawer {
