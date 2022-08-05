@@ -115,6 +115,14 @@ function handleClose () {
     </div>
 </template>
 
+<script lang="ts">
+
+export default {
+    name: 'TitleBar',
+}
+</script>
+
+
 <style lang="less" scoped>
 .title-bar{
     position: fixed;

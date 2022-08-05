@@ -41,6 +41,12 @@ let list = [
     </div>
 </template>
 
+<script lang="ts">
+export default {
+    name: 'Drawer'
+}
+</script>
+
 
 
 <style lang="less" scoped>

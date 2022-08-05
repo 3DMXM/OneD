@@ -17,8 +17,11 @@ import TitleBar from './components/TitleBar.vue'
 <script lang="ts">
 import {mapGetters,mapState, mapActions} from 'vuex'
 
-export default{
+export default {
     name:"App",
+    components: {
+        TitleBar, Drawer
+    },
     methods:{
         ...mapActions(['init']),
     },
@@ -27,6 +30,7 @@ export default{
     },
 }
 </script>
+
 
 
 <style>

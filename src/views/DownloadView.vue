@@ -1,38 +1,138 @@
 <script setup lang="ts">
+import { useStore } from 'vuex'
+import { ref, Ref, computed, watch } from 'vue'
+import mdui from "mdui"
+
+
 import DlownloadList from '@/components/DownloadList.vue'
-import {useStore } from 'vuex'
-import { ref, computed } from 'vue'
+import AddDownload from '@/components/AddDownload.vue'
+
 
 const Store = useStore();
 
+
+let task_list: Ref<Array<any>> = ref([]);
+
 let aria2 = Store.state.aria2;
 
-// vuex 中 actions 的 get_task_list
-let get_task_list = Store.dispatch('get_task_list');
+// let state_task_list = Store.state.task_list;
+// let state_task_list = computed(() => {
+//     return Store.state.task_list;
+// })
+// watch(state_task_list, (newVal, oldVal) => {
+//     // console.log(`state_task_list:`,newVal);
+//     state_task_list.value.forEach((item: any) => {
+//         let file = item.files[0]
+//         // F:/Games//GTA5_REDUX_V1.13.zip
+//         let name: string = file.path
 
-let timer = null;
+//         // 提取文件名称
+//         name = name.substring(name.lastIndexOf("/") + 1)
+//         task_list.value.push({
+//             id: item.gid,
+//             file: {
+//                 url: file.uris[0].uri,
+//                 name: name,
+//                 size: file.length
+//             }
+//         })
+//     });
+// })
 
-let task_list = computed(()=>{
-    return Store.state.task_list;
-})
 
-function uuid(){
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0, v = (c === 'x') ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-} 
-function addUri(){
-    // 新建下载
-    // aria2.addUri([secret, ]uris[, options[, position]])
-    
-    let urls = ['https://dmod.3dmgame.com/mod/Download/186563']
-    let name = '原版风格.zip';
-    let savePath = 'C:\\Users\\xiaom\\Downloads\\test'
-    
-    let id = aria2.addUri(urls, name, savePath)
-    console.log(id);
+
+
+
+
+let addUri = ref(false);
+
+
+
+function closeAdd() {
+    addUri.value = false;
 }
+
+function addTask(data: any) {
+    // console.log(data);
+    let file = {
+        url: data['@microsoft.graph.downloadUrl'],
+        name: data.name,
+        size: data.size,
+        id: data.id
+    }
+
+    if (!file.url) {
+        mdui.snackbar({
+            message: "文件ID错误,无法下载文件",
+            position: 'right-top'
+        });
+        return;
+    }
+
+    let SavePath = "F:\\test\\";
+
+    let id = aria2.addUri([file.url], file.name, SavePath, data.id);
+
+    // task_list.value.push({
+    //     id, file
+    // });
+    GetTaskList(tab)
+    closeAdd()
+}
+
+function UpTaskList(result: Array<any>) {
+
+    // 清空 task_list
+    task_list.value = [];
+
+    result.forEach((item: any) => {
+        let file = item.files[0]
+        // F:/Games//GTA5_REDUX_V1.13.zip
+        let name: string = file.path
+
+        // 提取文件名称
+        name = name.substring(name.lastIndexOf("/") + 1)
+        task_list.value.push({
+            id: item.gid,
+            file: {
+                url: file.uris[0].uri,
+                name: name,
+                size: file.length
+            },
+            status: item.status,
+            result: item
+        })
+    })
+}
+
+let tab = 1;
+
+function GetTaskList(tell: number) {
+    tab = tell;
+    switch (tell) {
+        case 1:
+            aria2.tellActive(0, 100).then((data: any) => {
+                let result = data.result;
+                UpTaskList(result);
+            })
+            break;
+        case 2:
+            aria2.tellWaiting(0, 100).then((data: any) => {
+                let result = data.result;
+                UpTaskList(result);
+
+            })
+            break;
+        case 3:
+            aria2.tellStopped(0, 100).then((data: any) => {
+                let result = data.result;
+                UpTaskList(result);
+            })
+            break;
+    }
+}
+
+GetTaskList(1)
 
 
 </script>
@@ -40,82 +140,46 @@ function addUri(){
 <template>
     <div class="Download">
         <div class="toolbar">
-            <div class="toolbar-btn" @click="addUri"><i class="mdui-icon material-icons">add</i> 新建任务</div>
+            <div class="toolbar-btn" @click="addUri = true"><i class="mdui-icon material-icons">add</i> 新建任务</div>
+        </div>
+        <div class="toolbar-tab">
+            <div class="mdui-tab" mdui-tab>
+                <a @click="GetTaskList(1)" class="mdui-ripple">下载中</a>
+                <a @click="GetTaskList(2)" class="mdui-ripple">等待下载</a>
+                <a @click="GetTaskList(3)" class="mdui-ripple">已停止下载</a>
+            </div>
         </div>
         <div class="task-list">
-            <DlownloadList 
-                v-for="item in task_list"
-                :key="item.gid"
-                :task='item' 
-                />
-        </div>        
+            <DlownloadList v-for="item in task_list" :key="item.id" :task='item' />
+        </div>
+        <AddDownload v-if="addUri" @closeAdd="closeAdd" @addTask="addTask" />
     </div>
 </template>
 
 <script lang="ts">
-// import DlownloadList from '@/components/DownloadList.vue'
-// import {ipcRenderer} from 'electron'
 
-// import {mapGetters,mapState, mapActions} from 'vuex'
-
-// export default {
-//     name: 'DownloadView',
-//     components: {
-//         DlownloadList
-//     },
-//     computed:{
-//         ...mapState(['aria2','task_list']),       
-//     },
-//     data() {
-//         // let d : Object = {
-//         //     tasks: [],
-//         //     timer: []
-//         // }
-//         return {
-//             // tasks: [],
-//             timer: []
-//         }
-//     },
-//     methods:{
-//         uuid(){
-//             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-//                 var r = Math.random() * 16 | 0, v = (c === 'x') ? r : (r & 0x3 | 0x8);
-//                 return v.toString(16);
-//             });
-//         },
-//         addUri(){
-//             // 新建下载
-//             // aria2.addUri([secret, ]uris[, options[, position]])
-            
-//             let urls = ['https://dmod.3dmgame.com/mod/Download/186563']
-//             let name = '原版风格.zip';
-//             let savePath = 'C:\\Users\\xiaom\\Downloads\\test'
-            
-//             let id = this.aria2.addUri(urls, name, savePath)
-//             console.log(id);
-            
-//         },
-//         ...mapActions(['get_task_list'])
-//     },
-//     mounted(){
-//         this.get_task_list()
-//     } 
-// }
+export default {
+    name: 'DownloadView',
+    components: {
+        DlownloadList
+    }
+}
 </script>
 
 <style lang="less" scoped>
-.Download{
+.Download {
     display: flex;
     flex-direction: column;
 
-    .toolbar{
+    .toolbar {
         width: 100%;
         height: 50px;
         display: flex;
         flex-direction: row;
         align-items: flex-end;
         padding-bottom: 15px;
-        .toolbar-btn{
+
+        .toolbar-btn {
             height: 30px;
             margin-right: 8px;
             margin-left: 8px;
@@ -127,13 +191,14 @@ function addUri(){
             cursor: pointer;
             transition: .5s;
 
-            &:hover{
+            &:hover {
                 background-color: #8ab4f8;
                 color: #fff;
             }
         }
     }
-    .task-list{
+
+    .task-list {
         border-top: 2px solid rgba(0, 0, 0, 0.1);
         padding: 16px;
         display: flex;
