@@ -1,17 +1,23 @@
 <script lang='ts' setup>
 import axios from "axios"
-
 import mdui from "mdui"
+import { ipcRenderer } from "electron"
 
-import { ref, reactive, defineEmits } from "vue"
+import { ref, reactive, defineEmits, computed } from "vue"
+
+import { useStore } from "vuex"
 
 const emit = defineEmits(["addTask", "closeAdd"]);
+const Store = useStore();
 
+let save_path = computed(() => {
+    return Store.state.save_path;
+})
 
 
 let download = reactive({
     file_id: "",
-    drive_type: ""
+    drive_type: "",
 })
 
 
@@ -31,9 +37,20 @@ function go() {
     }).then((req: any) => {
         // console.log(req.data);
         // 调用 $emit("addTask", req.data);
-        emit("addTask", req.data);
+        emit("addTask", req.data, save_path.value[0]);
     })
 }
+
+function select_folder() {
+    // 打开文件夹选择器
+    ipcRenderer.invoke("select-folder").then((result: string) => {
+        if (result) {
+            // download.save_path = result;
+            Store.commit("change_save_path", result);
+        }
+    })
+}
+
 
 
 </script>
@@ -54,6 +71,14 @@ function go() {
                             <input name="file_id" v-model="download.file_id" class="mdui-textfield-input" type="text"
                                 placeholder="如:012KYXHEI7I6AU5QXIRJBZ3PH2WZASAWKH" />
                         </div>
+                    </div>
+                    <div class="mdui-col-xs-12 save-path">
+                        <div class="mdui-textfield">
+                            <label for="file_id">保存位置:</label>
+                            <input name="file_id" v-model="save_path" class="mdui-textfield-input" type="text" />
+                        </div>
+                        <div @click="select_folder" class="mdui-btn mdui-btn-icon mdui-color-theme-accent mdui-ripple"
+                            title="选择文件夹"><i class="mdui-icon material-icons">folder</i></div>
                     </div>
                     <div class="mdui-col-xs-12 drive_type">
                         <label for="drive_type">云端网盘位置：</label>
@@ -91,10 +116,12 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 999;
 
     .add-window {
         width: 600px;
-        height: 250px;
+        // height: 250px;
+        padding: 15px;
         max-width: 100%;
         max-height: 100%;
         background: rgb(56, 56, 56);
@@ -126,6 +153,24 @@ export default {
 
                 label {
                     padding: 0 15px;
+                }
+            }
+
+            .save-path {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                .mdui-textfield {
+                    flex: 1 1 auto;
+                }
+
+                // label {
+                //     padding: 0 15px;
+                // }
+                .mdui-btn {
+                    position: absolute;
+                    right: 10px;
                 }
             }
 

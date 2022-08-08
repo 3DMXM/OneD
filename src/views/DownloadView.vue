@@ -15,47 +15,26 @@ let task_list: Ref<Array<any>> = ref([]);
 
 let aria2 = Store.state.aria2;
 
-// let state_task_list = Store.state.task_list;
-// let state_task_list = computed(() => {
-//     return Store.state.task_list;
-// })
-// watch(state_task_list, (newVal, oldVal) => {
-//     // console.log(`state_task_list:`,newVal);
-//     state_task_list.value.forEach((item: any) => {
-//         let file = item.files[0]
-//         // F:/Games//GTA5_REDUX_V1.13.zip
-//         let name: string = file.path
-
-//         // 提取文件名称
-//         name = name.substring(name.lastIndexOf("/") + 1)
-//         task_list.value.push({
-//             id: item.gid,
-//             file: {
-//                 url: file.uris[0].uri,
-//                 name: name,
-//                 size: file.length
-//             }
-//         })
-//     });
-// })
-
-
-
-
-
-
 let addUri = ref(false);
-
-
 
 function closeAdd() {
     addUri.value = false;
 }
 
-function addTask(data: any) {
+function addTask(data: any, SavePath: string) {
     // console.log(data);
+    // pan.aoetop.workers.dev
+    let url: string = data['@microsoft.graph.downloadUrl'];
+
+    // 替換url中的 xmsky-my.sharepoint.com 为 pan.aoetop.workers.dev
+    url = url.replace(/xmsky-my.sharepoint.com/g, "pan.aoetop.workers.dev");
+
+    // 替換url中的 xmsky2-my.sharepoint.com 为 game.aoetop.workers.dev
+    url = url.replace(/xmsky2-my.sharepoint.com/g, "game.aoetop.workers.dev");
+
+
     let file = {
-        url: data['@microsoft.graph.downloadUrl'],
+        url: url,
         name: data.name,
         size: data.size,
         id: data.id
@@ -69,40 +48,49 @@ function addTask(data: any) {
         return;
     }
 
-    let SavePath = "F:\\test\\";
-
-    let id = aria2.addUri([file.url], file.name, SavePath, data.id);
-
-    // task_list.value.push({
-    //     id, file
-    // });
-    GetTaskList(tab)
-    closeAdd()
+    aria2.addUri([file.url], file.name, SavePath, file.id).then((data: any) => {
+        console.log('addUri', data);
+        GetTaskList(1)
+    });
 }
 
-function UpTaskList(result: Array<any>) {
+function UpTaskList(data: any) {
+    let result = data.result;
+    if (result) {
+        // 清空 task_list
+        task_list.value = [];
+        if (result.length > 0) {
+            console.log(data);
 
-    // 清空 task_list
-    task_list.value = [];
+            result.forEach((item: any) => {
+                let file = item.files[0]
+                // F:/Games//GTA5_REDUX_V1.13.zip
+                let name: string = file.path
 
-    result.forEach((item: any) => {
-        let file = item.files[0]
-        // F:/Games//GTA5_REDUX_V1.13.zip
-        let name: string = file.path
+                // 提取文件名称
+                name = name.substring(name.lastIndexOf("/") + 1)
+                task_list.value.push({
+                    id: item.gid,
+                    file: {
+                        url: file.uris[0].uri,
+                        name: name,
+                        size: file.length
+                    },
+                    status: item.status,
+                    result: item
+                })
+            })
+            closeAdd()
+        }
+    } else {
+        console.log(data);
+        mdui.snackbar({
+            message: "发生错误：" + data.error.message,
+            position: 'right-top'
+        });
+    }
 
-        // 提取文件名称
-        name = name.substring(name.lastIndexOf("/") + 1)
-        task_list.value.push({
-            id: item.gid,
-            file: {
-                url: file.uris[0].uri,
-                name: name,
-                size: file.length
-            },
-            status: item.status,
-            result: item
-        })
-    })
+
 }
 
 let tab = 1;
@@ -112,21 +100,17 @@ function GetTaskList(tell: number) {
     switch (tell) {
         case 1:
             aria2.tellActive(0, 100).then((data: any) => {
-                let result = data.result;
-                UpTaskList(result);
+                UpTaskList(data);
             })
             break;
         case 2:
             aria2.tellWaiting(0, 100).then((data: any) => {
-                let result = data.result;
-                UpTaskList(result);
-
+                UpTaskList(data);
             })
             break;
         case 3:
             aria2.tellStopped(0, 100).then((data: any) => {
-                let result = data.result;
-                UpTaskList(result);
+                UpTaskList(data);
             })
             break;
     }

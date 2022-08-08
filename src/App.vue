@@ -15,38 +15,53 @@ import TitleBar from './components/TitleBar.vue'
 </template>
 
 <script lang="ts">
-import {mapGetters,mapState, mapActions} from 'vuex'
+import { mapGetters, mapState, mapActions } from 'vuex'
 
 export default {
-    name:"App",
+    name: "App",
     components: {
         TitleBar, Drawer
     },
-    methods:{
+    methods: {
         ...mapActions(['init']),
     },
-    mounted(){
+    mounted() {
         this.init();
     },
 }
 </script>
 
 
+<style lang="less" scoped>
+.view {
+    position: fixed;
+    height: 100vh;
+    overflow: auto;
+}
+</style>
 
 <style>
 @import url(mdui);
-.view{
+
+.view {
     width: calc(100% - 200px);
     margin-left: 200px;
     margin-top: 36px;
 }
+
 /* 滚动条美化 */
-.scrollbar-hover::-webkit-scrollbar,.scrollbar-hover::-webkit-scrollbar-button,.scrollbar-hover::-webkit-scrollbar-thumb,.scrollbar-hover::-webkit-scrollbar-track {
+.scrollbar-hover::-webkit-scrollbar,
+.scrollbar-hover::-webkit-scrollbar-button,
+.scrollbar-hover::-webkit-scrollbar-thumb,
+.scrollbar-hover::-webkit-scrollbar-track {
     visibility: hidden;
     width: 3px
 }
 
-.scrollbar-hover:hover::-webkit-scrollbar,.scrollbar-hover:hover::-webkit-scrollbar-button,.scrollbar-hover:hover::-webkit-scrollbar-thumb,.scrollbar-hover:hover::-webkit-scrollbar-track {
+.scrollbar-hover:hover::-webkit-scrollbar,
+.scrollbar-hover:hover::-webkit-scrollbar-button,
+.scrollbar-hover:hover::-webkit-scrollbar-thumb,
+.scrollbar-hover:hover::-webkit-scrollbar-track {
     visibility: visible;
     width: 7px
 }
@@ -66,14 +81,14 @@ export default {
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
     border-radius: 5px;
-    -webkit-box-shadow: inset 1px 1px 0 rgba(0,0,0,.1),inset 0 -1px 0 rgba(0,0,0,.07);
+    -webkit-box-shadow: inset 1px 1px 0 rgba(0, 0, 0, .1), inset 0 -1px 0 rgba(0, 0, 0, .07);
     border: 3px solid transparent;
     transition: .5s all
 }
 
 ::-webkit-scrollbar-thumb:hover {
     background-color: #b1b1b1;
-    -webkit-box-shadow: inset 1px 1px 1px rgba(0,0,0,.25);
+    -webkit-box-shadow: inset 1px 1px 1px rgba(0, 0, 0, .25);
     border: 0 solid transparent
 }
 </style>

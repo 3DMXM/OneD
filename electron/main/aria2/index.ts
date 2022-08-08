@@ -1,8 +1,8 @@
 /**
  * 启动和配置aria2
  */
- const { exec } = require('node:child_process');
- const {join} = require('path');
+const { exec } = require('node:child_process');
+const { join } = require('path');
 // F:\Node.js\oned\electron\main\aria2\aria2c.exe
 // F:\Node.js\oned\electron\main\aria2c\aria2c.exe
 // 启动aria2
@@ -12,14 +12,14 @@ function startAria2() {
     let aria2c = join(aria2cPath, '/aria2c.exe');
     let aria2cConf = join(aria2cPath, 'aria2.conf');
     console.log(mainPath);
-    exec(`${aria2c} --conf-path=${aria2cConf}`, (err: any, stdout: any, stderr: any) => {
+    exec(`${aria2c} --conf-path=${aria2cConf} -x 10 -s 1`, (err: any, stdout: any, stderr: any) => {
         if (!err) {
             console.log(stdout);
-        }else{
+        } else {
             console.error(err);
             return;
         }
-        console.log(stdout);
+        console.log("aria2c", stdout);
     });
 }
 
@@ -29,7 +29,7 @@ function stopAria2() {
         if (!err) {
             console.log(`stdout: ${stdout}`);
             console.log(`stderr: ${stderr}`);
-        }else{
+        } else {
             console.error(`exec error: ${err}`);
             return;
         }
@@ -41,7 +41,7 @@ function downloadFile(url: any, path: any, callback: any) {
     exec(`aria2c -d ${path} -o ${path} ${url}`, (err: any, stdout: any, stderr: any) => {
         if (!err) {
             console.log(stdout);
-        }else{
+        } else {
             console.error(err);
             return;
         }

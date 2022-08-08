@@ -25,7 +25,7 @@ export const ROOT_PATH = {
     public: join(__dirname, app.isPackaged ? '../..' : '../../../public'),
 }
 
-let win : any;
+let win: any;
 // Here, you can also use other preload
 const preload = join(__dirname, '../preload/index.js')
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin
@@ -63,10 +63,10 @@ async function createWindow() {
     })
 
     // Make all links open with the browser, not with the application
-    win.webContents.setWindowOpenHandler(({ url } :any ) => {
+    win.webContents.setWindowOpenHandler(({ url }: any) => {
         if (url.startsWith('https:')) shell.openExternal(url)
         return { action: 'deny' }
-      })
+    })
 
     // 打开开发者工具
     if (process.env.NODE_ENV === 'development') {
@@ -154,5 +154,12 @@ ipcMain.on('window-close', function () {
         aria2.stopAria2();
         win.close();
     }
+})
+
+// 选择文件夹
+ipcMain.handle('select-folder', (event, arg) => {
+    const { dialog } = require('electron');
+    let path = dialog.showOpenDialogSync({ title: "选择下载保存目录", properties: ['openDirectory', 'showHiddenFiles'] })
+    return path
 })
 

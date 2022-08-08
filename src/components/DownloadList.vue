@@ -2,6 +2,7 @@
 import { useStore } from 'vuex'
 import { ref, reactive, computed, toRefs } from 'vue'
 import { number } from 'yargs';
+import { shell } from 'electron';
 
 const Store = useStore();
 let aria2 = Store.state.aria2
@@ -59,6 +60,15 @@ let errmsg = computed(() => {
     }
 })
 
+//  通过下载速度计算所需剩余时间
+let time_left = computed(() => {
+    let speed = file.downloadSpeed;
+    let size = file.size - completedLength.value;
+    let time = size / speed;
+    let time_left = Math.floor(time / 60) + "分" + Math.floor(time % 60) + "秒";
+    return time_left;
+})
+
 
 // 每隔1秒获取一次下载进度
 function getProgress() {
@@ -77,7 +87,7 @@ function getProgress() {
     })
 }
 
-// 进度条 百分百
+// 进度条 百分比
 let progress = computed(() => {
     let size: number = task.value.file.size;
     let completed: number = completedLength.value;
@@ -122,11 +132,9 @@ let downloadSpeed = computed(() => {
 function toPause() {
     aria2.pause(task.value.id).then((data: any) => {
         console.log(data);
-
         clearInterval(timer);
         status.value = "pausing"
     })
-
 }
 // 继续
 function toContinue() {
@@ -135,10 +143,6 @@ function toContinue() {
         timer = setInterval(getProgress, 1000);
         status.value = "downloading"
     })
-
-
-    // timer = setInterval(getProgress, 1000);
-    // status.value = "downloading"
 }
 // 重新下载
 function toRestart() {
@@ -171,6 +175,22 @@ function cpeSpeed(speed: number) {
     return speedStr;
 }
 
+// 删除任务
+function del() {
+    aria2.remove(task.value.id).then((data: any) => {
+        console.log(data);
+        clearInterval(timer);
+        file = null;
+    })
+}
+// 打开文件夹
+function openFolder() {
+    let folder = task.value.result.dir
+    console.log(`${folder}\\${task.value.file.name}`);
+
+    shell.showItemInFolder(`${folder}\\${task.value.file.name}`);
+}
+
 </script>
 <template>
     <div class="task-item">
@@ -183,12 +203,15 @@ function cpeSpeed(speed: number) {
                         class="mdui-icon material-icons">pause</i></div>
                 <div class="task-item-action" v-else-if="status == 'paused'" title="继续" @click="toContinue()"><i
                         class="mdui-icon material-icons">play_arrow</i></div>
-                <div class="task-item-action" v-else-if="status == 'completed' || status == 'error' " title="重新下载" @click="toRestart()">
+                <div class="task-item-action" v-else-if="status == 'completed' || status == 'error'" title="重新下载"
+                    @click="toRestart()">
                     <i class="mdui-icon material-icons">play_arrow</i>
                 </div>
 
-                <div class="task-item-action" title="删除"><i class="mdui-icon material-icons">delete</i></div>
-                <div class="task-item-action" title="打开文件夹"><i class="mdui-icon material-icons">folder</i></div>
+                <div class="task-item-action" @click="del" title="删除"><i class="mdui-icon material-icons">delete</i>
+                </div>
+                <div class="task-item-action" @click="openFolder" title="打开文件夹"><i
+                        class="mdui-icon material-icons">folder</i></div>
                 <div class="task-item-action" title="复制下载地址"><i class="mdui-icon material-icons">insert_link</i></div>
                 <div class="task-item-action" title="详细信息"><i class="mdui-icon material-icons">info_outline</i></div>
 
@@ -202,6 +225,7 @@ function cpeSpeed(speed: number) {
         <div class="row task-progress-info">
             <div class="task-file-size"> {{ cpeFileSize(completedLength) }} / {{ cpeFileSize(file.size) }}
                 <span>{{ progress }}%</span>
+                <span>{{ time_left }}</span>
             </div>
             <div class="task-err" v-if="errmsg">{{ errmsg }}</div>
             <div class="task-speed-text" v-else>{{ downloadSpeed }}</div>

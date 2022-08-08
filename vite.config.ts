@@ -11,7 +11,7 @@ rmSync('dist', { recursive: true, force: true }) // v14.14.0
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [        
+    plugins: [
         vue(),
         electron({
             main: {
@@ -25,7 +25,7 @@ export default defineConfig({
             preload: {
                 input: {
                     // 您可以在此处配置多个预加载
-                    index: join(__dirname, 'electron/preload/index.js'),
+                    index: join(__dirname, 'electron/preload/index.ts'),
                 },
                 vite: {
                     build: {
@@ -43,10 +43,10 @@ export default defineConfig({
         host: pkg.env.VITE_DEV_SERVER_HOST,
         port: pkg.env.VITE_DEV_SERVER_PORT,
     },
-    resolve:{
+    resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url)),
-        },  
+        },
     }
 })
 

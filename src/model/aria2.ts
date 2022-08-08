@@ -74,7 +74,12 @@ export default class api {
                 }
             ]
         })
-        return id;
+        // return id;
+        return new Promise((resolve, reject) => {
+            this.message().then((data: any) => {
+                resolve(data);
+            })
+        })
     }
     /**
      * 监听下载任务
@@ -130,6 +135,20 @@ export default class api {
             })
         })
     }
+    // 删除任务
+    async remove(gid: string) {
+        let id = this.send({
+            'jsonrpc': '2.0',
+            'method': 'aria2.remove',
+            id: gid,
+            'params': [gid]
+        })
+        return new Promise((resolve, reject) => {
+            this.message().then((data: any) => {
+                resolve(data);
+            })
+        })
+    }
 
 
     // 获取下载中的任务
@@ -175,4 +194,6 @@ export default class api {
             })
         })
     }
+
+
 }
